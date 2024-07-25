@@ -239,10 +239,8 @@ function nextImage() {
             wrongAnswers.push(quizData[currentImage].id);
         }
         if (currentImage < quizData.length-1) {
+            img.src = quizData[currentImage+1].src;
             currentImage++;
-            let nextImg = new Image();
-            nextImg.src = quizData[currentImage+1].src || "";
-            img.src = quizData[currentImage].src;
         } else {
             showResults();
         }
