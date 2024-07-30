@@ -192,6 +192,7 @@ const imgElem = document.getElementById("img");
 const quizForm = document.getElementById("quiz-form");
 const result = document.getElementById("result");
 const qCounter = document.getElementById("question-counter");
+document.getElementById("question-amount").innerText = quizData.length;
 
 let currentImage = 0;
 let img = new Image();
