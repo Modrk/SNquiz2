@@ -201,54 +201,54 @@ img.style.maxHeight = "500px";
 imgElem.appendChild(img);
 let score = 0;
 const wrongAnswers = [];
+const cache = document.createElement("div");
+cache.classList.add("invisible");
+
+function preloadImage(url) {
+    let nimg = new Image();
+    nimg.src = url;
+    nimg.classList.add("invisible");
+    cache.appendChild(nimg);
+}
+
+preloadImage(quizData[currentImage+1].src);
+
 
 function showResults() {
     quizForm.classList.add("d-none", "invisible");
     result.innerHTML += `<p>Du svarede rigtigt på <strong>${Math.round(100*score/quizData.length)}%</strong> af spørgsmålene (${score}/${quizData.length}).</p>`;
-    
-    if (wrongAnswers.length > 0) {
+    if (wrongAnswers.length) {
         result.innerHTML += "<p>Tjek disse billeder igen (<span class=\"text-success fw-bold\">grøn</span> = SN, <span class=\"text-danger fw-bold\">rød</span> = ikke SN):</p>";
-        let image = new Image();
-        for (let id of wrongAnswers) {
-            let i = image.cloneNode();
-            for (let obj of quizData) {
-                if (obj.id === id) {
-                    i.src = obj.src;
-                    if (obj.correct === "yes") {
-                        i.classList.add("border-green");
-                    } else {
-                        i.classList.add("border-red");
-                    }
-                }
-            }
-            i.classList.add("d-block", "img-fluid");
-            i.style.maxHeight = "500px";
+        const filtrQuizData = quizData.filter((obj) => wrongAnswers.includes(obj.id));
+        filtrQuizData.forEach((question) => {
+            let i = img.cloneNode();
+            i.src = question.src;
+            question.correct === "yes" ? i.classList.add("border-green") : i.classList.add("border-red");
             result.appendChild(i);
-        }
+        });
     }
     result.classList.remove("invisible");
 }
 
 
+
 function nextImage() {
     let answer = document.querySelector('input[name="answer"]:checked')?.value;
     if (answer) {
-        if (quizData[currentImage].correct === answer) {
-            score++;
-        } else {
-            wrongAnswers.push(quizData[currentImage].id);
-        }
+        quizData[currentImage].correct === answer ? score++ : wrongAnswers.push(quizData[currentImage].id);
         if (currentImage < quizData.length-1) {
             img.src = quizData[currentImage+1].src;
+
+            if (currentImage < quizData.length - 2) {
+                preloadImage(quizData[currentImage+2].src);
+            }
             currentImage++;
         } else {
             showResults();
         }
-    
         document.querySelector('input[name="answer"]:checked').checked = false;
         qCounter.innerText = currentImage+1;
     }
 }
-
 
 nextQbtn.addEventListener("click", nextImage);
